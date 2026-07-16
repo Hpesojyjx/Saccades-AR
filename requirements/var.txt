@@ -1,0 +1,13 @@
+# Versions are taken from the authors' VAR reference environment via pip freeze.
+# Install the CUDA 12.1 PyTorch wheels as documented in README.md when using a GPU.
+torch==2.1.0
+torchvision==0.16.0
+numpy==1.26.4
+pillow==12.2.0
+huggingface-hub==1.9.0
+typed-argument-parser==0.17.0
+requests==2.33.1
+scipy==1.15.3
+tensorboard==2.20.0
+pytz==2026.1.post1
+tqdm==4.67.3
