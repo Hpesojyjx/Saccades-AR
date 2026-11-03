@@ -24,6 +24,31 @@ At each step, SAR ranks the still-uncommitted positions by similarity to a condi
 
 Across ImageNet, GenEval, DPG-Bench, MJHQ-30K, and the paper's complex long-prompt benchmark, we evaluate generation quality, prompt alignment, and compositional reasoning. Qualitative trajectories illustrate two complementary behaviors: **outline-to-detail generation** in scale-wise models and **object-by-object generation** in patch-wise models.
 
+## Generation trajectories
+
+### Object-by-object generation · MaskGen-XL
+
+[![MaskGen-XL generation of four vases: Random above, SAR below](assets/paper/order_illustrate.png)](assets/paper/order_illustrate.png)
+
+For the prompt **“a photo of four vases,”** SAR progressively completes objects, while random ordering develops scattered parts concurrently. Columns show successive autoregressive steps; Random is the top row and SAR the bottom row.
+
+### Outline-to-detail generation · Infinity-8B
+
+[![Infinity-8B generation of four candles: Random above, SAR below](assets/paper/candle.jpg)](assets/paper/candle.jpg)
+
+For **four lit white candles in a row**, SAR establishes the object layout early and fills in details over subsequent last-scale decoding steps. The top row uses Random ordering; the bottom row uses SAR.
+
+<details>
+<summary><strong>More examples: objects and spatial relations</strong></summary>
+
+[![Infinity-8B forest scene with a rabbit, fox, and owl: Random above, SAR below](assets/paper/fox.jpg)](assets/paper/fox.jpg)
+
+A complex prompt specifies a rabbit on the left of a log, a fox on the right, and an owl above. This example illustrates the paper's outline-to-detail behavior under SAR. Random is shown above SAR.
+
+</details>
+
+*Figures are reproduced from the paper. Click an image to view it at full size.*
+
 ## Selected results
 
 GenEval overall pass rate (%, higher is better), as reported in the paper:
