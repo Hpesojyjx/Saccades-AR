@@ -1,26 +1,53 @@
-# Saccade Autoregressive Generation
+<div align="center">
 
-Official experiment code for **Context-Aware Autoregressive Image Generation for Emerging Reasoning Properties**.
+# Saccades-AR
+### Context-Aware Autoregressive Image Generation for Emerging Reasoning Properties
 
-Saccade Autoregressive Generation (SAR) changes the order in which an autoregressive image model commits visual tokens. At each iterative decoding step, SAR ranks uncommitted positions using the distance between their current hidden states and the model's conditioning embedding, then commits the most context-relevant positions first. This repository provides SAR implementations for VAR and Infinity.
+**NeurIPS 2026**
 
-## Repository layout
+[Paper](https://openreview.net/forum?id=XS3R795hKo) · [VAR guide](var/README.md) · [Infinity guide](infinity/README.md) · [Citation](#citation)
 
-```text
-SAR-public-release/
-├── var/                       # VAR training and class-conditional inference
-├── infinity/                  # Infinity-2B/8B text-to-image inference
-├── requirements/              # Separate VAR, Infinity, and evaluation environments
-├── examples/prompts.txt       # Example text prompts
-└── tests/                     # CPU scheduling and public CLI tests
+Jixuan Ying · Haoyu Liu · Timing Yang · Tingyu Zhu · Predrag Neskovic  
+Anand Bhattad · Cihang Xie · Zeyu Zheng · Alan Yuille · Feng Wang
+
+</div>
+
+---
+
+**Choose where to generate next, using the context already available to the model.**
+
+Saccade Autoregressive Generation (SAR) ranks uncommitted image-token positions by squared L2 distance between their current transformer hidden states and a conditioning anchor. It commits the nearest positions, updates the partially generated image, and repeats. The scoring rule introduces no additional learned parameters.
+
+This is the official **VAR and Infinity implementation** accompanying the paper.
+
+## Release contents
+
+| Model | Task | Released workflow | Last-scale steps |
+| :--- | :--- | :--- | :---: |
+| VAR-d16 / d20 | Class-conditional ImageNet generation | Random-order multi-step retraining; one-step, Random, and SAR inference | 4 |
+| Infinity-2B / 8B | Text-to-image generation | Random, SAR, sequential, and inside-out inference | 16 |
+
+- **VAR:** the anchor is the class embedding. Random and SAR use the same order-agnostic retrained checkpoint.
+- **Infinity:** the anchor is the attentive-pooled text-conditioning embedding. The method reuses pretrained Infinity weights.
+- Both implementations apply iterative decoding to the **final scale only**, retaining the preceding coarse-to-fine scales.
+
+**Scope of this release.** This repository does not yet include the MAR, MaskGen, or MaskGIT-control implementations, the full long-prompt benchmark and judging assets, or retrained VAR checkpoints. The VAR inference CLI currently supports d16 and d20; the d24/d30 experiments reported in the paper are not exposed by this CLI. The instructions below provide generation workflows, not a claim that every paper table can be reproduced from this checkout alone.
+
+## Getting started
+
+```bash
+git clone https://github.com/Hpesojyjx/Saccades-AR.git
+cd Saccades-AR
 ```
 
-Detailed usage:
+Run all commands from this directory. Use separate Python 3.10 environments for VAR and Infinity, download the required upstream weights, then follow the corresponding guide:
 
-- [VAR experiments](var/README.md)
-- [Infinity experiments](infinity/README.md)
+| Start here | What you need |
+| :--- | :--- |
+| [VAR training and inference](var/README.md) | VAR initialization, VAE, and ImageNet-1K for retraining |
+| [Infinity text-to-image inference](infinity/README.md) | Infinity weights, BSQ-VAE, FLAN-T5-XL, and text prompts |
 
-Run all commands below from the repository root.
+GPU execution requires a compatible NVIDIA CUDA environment. Infinity additionally requires a compatible FlashAttention build. Dependency pins are supplied in [requirements/](requirements/); installation and GPU runtime depend on your platform.
 
 ## Installation
 
@@ -64,6 +91,12 @@ Infinity GPU inference also requires a `flash-attn` build compatible with the in
 
 ## Experiment commands
 
+The seed `0` is an example, not a record of the paper's experimental seeds. Replace all `/path/to/...` values with local resources. Keep checkpoints, sampling settings, prompts, and step budgets matched when comparing Random with SAR.
+
+<details>
+<summary><strong>Show training, inference, and benchmark-generation commands</strong></summary>
+
+
 ### Train a four-step VAR checkpoint
 
 ```bash
@@ -77,7 +110,7 @@ for DEPTH in 16 20; do
     --num-steps 4 \
     --bs 768 \
     --ep 250 \
-    --seed YOUR_SEED
+    --seed 0
 done
 ```
 
@@ -92,7 +125,7 @@ bash var/scripts/infer.sh \
   --vae-checkpoint /path/to/vae_ch160v4096z32.pth \
   --labels 0,1,2 \
   --samples-per-label 4 \
-  --seed YOUR_SEED \
+  --seed 0 \
   --output-dir ./outputs/var_original
 
 # Matched Random and SAR inference
@@ -105,7 +138,7 @@ for ORDER in random sar; do
     --vae-checkpoint /path/to/vae_ch160v4096z32.pth \
     --labels 0,1,2 \
     --samples-per-label 4 \
-    --seed YOUR_SEED \
+    --seed 0 \
     --output-dir "./outputs/var_${ORDER}"
 done
 ```
@@ -122,7 +155,7 @@ for ORDER in random sar; do
     --vae-path /path/to/infinity_vae_d32reg.pth \
     --text-encoder /path/to/flan-t5-xl \
     --prompts examples/prompts.txt \
-    --seed YOUR_SEED \
+    --seed 0 \
     --output-dir "./outputs/infinity_2b_${ORDER}"
 done
 ```
@@ -139,7 +172,7 @@ for ORDER in random sar; do
     --vae-path /path/to/infinity_vae_d32reg.pth \
     --text-encoder /path/to/flan-t5-xl \
     --prompts examples/prompts.txt \
-    --seed YOUR_SEED \
+    --seed 0 \
     --output-dir "./outputs/infinity_8b_${ORDER}"
 done
 ```
@@ -159,7 +192,7 @@ for ORDER in sequential inside_out; do
     --text-encoder /path/to/flan-t5-xl \
     --prompts /path/to/benchmark_prompts.txt \
     --samples-per-prompt 4 \
-    --seed YOUR_SEED \
+    --seed 0 \
     --output-dir "./outputs/infinity_8b_${ORDER}"
 done
 ```
@@ -179,7 +212,7 @@ for ORDER in random sequential inside_out sar; do
     --text-encoder /path/to/flan-t5-xl \
     --prompts /path/to/geneval_prompts.txt \
     --samples-per-prompt 4 \
-    --seed YOUR_SEED \
+    --seed 0 \
     --output-dir "./outputs/geneval_infinity_8b_${ORDER}"
 done
 ```
@@ -197,7 +230,7 @@ for ORDER in random sequential inside_out sar; do
     --text-encoder /path/to/flan-t5-xl \
     --prompts /path/to/dpg_bench_prompts.txt \
     --samples-per-prompt 4 \
-    --seed YOUR_SEED \
+    --seed 0 \
     --output-dir "./outputs/dpg_infinity_8b_${ORDER}"
 
   python infinity/evaluation/make_2x2_grids.py \
@@ -222,7 +255,7 @@ bash infinity/scripts/infer.sh \
   --text-encoder /path/to/flan-t5-xl \
   --prompts /path/to/mjhq30k_prompts.txt \
   --samples-per-prompt 1 \
-  --seed YOUR_SEED \
+  --seed 0 \
   --output-dir ./outputs/mjhq30k_infinity_8b_sar
 
 pip install -r requirements/evaluation.txt
@@ -238,22 +271,47 @@ python -m pytorch_fid \
 pip install -r requirements/evaluation.txt
 python -m pytorch_fid \
   /path/to/generated/images \
-  /path/to/adm/imagenet256_stats.npz \
+  /path/to/pytorch_fid_compatible_imagenet256_stats.npz \
   --device cuda:0
 ```
 
 See the [VAR guide](var/README.md) and [Infinity guide](infinity/README.md) for full-dataset generation, output naming, distributed execution, and benchmark-specific commands.
 
+
+The FID statistics must be compatible with the selected evaluator and its preprocessing. The `pytorch_fid` commands alone do not reproduce ADM Inception Score, precision, or recall. Benchmark prompt preparation and evaluator-specific output conversion remain separate steps.
+
+</details>
+
+## Repository layout
+
+```text
+Saccades-AR/
+├── var/                       # Multi-step training and class-conditional inference
+├── infinity/                  # Text-to-image inference and image-grid utility
+├── requirements/              # Model-specific and evaluation dependencies
+├── examples/prompts.txt       # Example prompts, not the full paper benchmark
+├── LICENSE
+└── THIRD_PARTY_NOTICES.md
+```
+
 ## Citation
 
 ```bibtex
-@article{ying2026contextaware,
-  title   = {Context-Aware Autoregressive Image Generation for Emerging Reasoning Properties},
-  author  = {Ying, Jixuan and Liu, Haoyu and Yang, Timing and Zhu, Tingyu and Neskovic, Predrag and Bhattad, Anand and Xie, Cihang and Zheng, Zeyu and Yuille, Alan and Wang, Feng},
-  year    = {2026}
+@inproceedings{ying2026contextaware,
+  title     = {Context-Aware Autoregressive Image Generation for Emerging Reasoning Properties},
+  author    = {Ying, Jixuan and Liu, Haoyu and Yang, Timing and Zhu, Tingyu and Neskovic, Predrag and Bhattad, Anand and Xie, Cihang and Zheng, Zeyu and Yuille, Alan and Wang, Feng},
+  booktitle = {Advances in Neural Information Processing Systems},
+  year      = {2026},
+  url       = {https://openreview.net/forum?id=XS3R795hKo}
 }
 ```
 
-## License
+## Acknowledgments and license
 
-The copied VAR and Infinity code is released under the FoundationVision MIT License. See [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for license and attribution details.
+Built on [VAR](https://github.com/FoundationVision/VAR) and [Infinity](https://github.com/FoundationVision/Infinity) by FoundationVision. We thank their authors for releasing the models and code.
+
+See [LICENSE](LICENSE), [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), and the retained per-file notices for code licensing and attribution. Separately downloaded model weights, text encoders, and datasets retain their respective licenses.
+
+## Questions and issues
+
+For implementation questions or reproducibility issues, please [open an issue](https://github.com/Hpesojyjx/Saccades-AR/issues). Include the model, generation order, command, software environment, and error trace where relevant.
