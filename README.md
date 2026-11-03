@@ -14,22 +14,28 @@ Anand Bhattad · Cihang Xie · Zeyu Zheng · Alan Yuille · Feng Wang
 
 ---
 
-**Choose where to generate next, using the context already available to the model.**
+Official code for **Context-Aware Autoregressive Image Generation for Emerging Reasoning Properties**.
 
-Saccade Autoregressive Generation (SAR) ranks uncommitted image-token positions by squared L2 distance between their current transformer hidden states and a conditioning anchor. It commits the nearest positions, updates the partially generated image, and repeats. The scoring rule introduces no additional learned parameters.
+## Overview
 
-This is the official **VAR and Infinity implementation** accompanying the paper.
+Autoregressive image generation typically follows a predefined or heuristic generation order. **Saccade Autoregressive Generation (SAR)** instead determines which token positions to generate next from global conditioning and the current partially generated image.
 
-## Release contents
+At each step, SAR ranks the still-uncommitted positions by similarity to a conditioning anchor and commits the most context-relevant positions first. The ordering rule introduces no new learned parameters. The paper studies both **patch-wise models (MAR and MaskGen)** and **scale-wise models (VAR and Infinity)**.
 
-| Model | Task | Released workflow | Last-scale steps |
-| :--- | :--- | :--- | :---: |
-| VAR-d16 / d20 | Class-conditional ImageNet generation | Random-order multi-step retraining; one-step, Random, and SAR inference | 4 |
-| Infinity-2B / 8B | Text-to-image generation | Random, SAR, sequential, and inside-out inference | 16 |
+Across ImageNet, GenEval, DPG-Bench, MJHQ-30K, and the paper's complex long-prompt benchmark, we evaluate generation quality, prompt alignment, and compositional reasoning. Qualitative trajectories illustrate two complementary behaviors: **outline-to-detail generation** in scale-wise models and **object-by-object generation** in patch-wise models.
 
-- **VAR:** the anchor is the class embedding. Random and SAR use the same order-agnostic retrained checkpoint.
-- **Infinity:** the anchor is the attentive-pooled text-conditioning embedding. The method reuses pretrained Infinity weights.
-- Both implementations apply iterative decoding to the **final scale only**, retaining the preceding coarse-to-fine scales.
+## Selected results
+
+GenEval overall pass rate (%, higher is better), as reported in the paper:
+
+| Model | Random | SAR |
+| :--- | ---: | ---: |
+| MaskGen-L | 53.94 | **57.49** |
+| MaskGen-XL | 56.22 | **59.99** |
+| Infinity-2B | 71.79 ± 0.46 | **72.57 ± 0.65** |
+| Infinity-8B | 80.63 ± 0.60 | **81.34 ± 0.81** |
+
+See the [paper](https://openreview.net/forum?id=XS3R795hKo) for the full results, experimental settings, and ablations.
 
 ## Getting started
 
