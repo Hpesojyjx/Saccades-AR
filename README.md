@@ -31,8 +31,6 @@ This is the official **VAR and Infinity implementation** accompanying the paper.
 - **Infinity:** the anchor is the attentive-pooled text-conditioning embedding. The method reuses pretrained Infinity weights.
 - Both implementations apply iterative decoding to the **final scale only**, retaining the preceding coarse-to-fine scales.
 
-**Scope of this release.** This repository does not yet include the MAR, MaskGen, or MaskGIT-control implementations, the full long-prompt benchmark and judging assets, or retrained VAR checkpoints. The VAR inference CLI currently supports d16 and d20; the d24/d30 experiments reported in the paper are not exposed by this CLI. The instructions below provide generation workflows, not a claim that every paper table can be reproduced from this checkout alone.
-
 ## Getting started
 
 ```bash
@@ -289,7 +287,7 @@ Saccades-AR/
 ├── var/                       # Multi-step training and class-conditional inference
 ├── infinity/                  # Text-to-image inference and image-grid utility
 ├── requirements/              # Model-specific and evaluation dependencies
-├── examples/prompts.txt       # Example prompts, not the full paper benchmark
+├── examples/prompts.txt       # Example text prompts
 ├── LICENSE
 └── THIRD_PARTY_NOTICES.md
 ```
