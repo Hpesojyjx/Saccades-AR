@@ -5,7 +5,7 @@
 
 **NeurIPS 2026**
 
-[Paper](https://arxiv.org/abs/2611.06838) · [PDF](https://arxiv.org/pdf/2611.06838) · [VAR guide](var/README.md) · [Infinity guide](infinity/README.md) · [Citation](#citation)
+[Paper](https://arxiv.org/abs/2611.06838) · [VAR guide](var/README.md) · [Infinity guide](infinity/README.md) · [Citation](#citation)
 
 Jixuan Ying · Haoyu Liu · Timing Yang · Tingyu Zhu · Predrag Neskovic  
 Anand Bhattad · Cihang Xie · Zeyu Zheng · Alan Yuille · Feng Wang
