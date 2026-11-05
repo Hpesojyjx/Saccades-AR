@@ -5,7 +5,7 @@
 
 **NeurIPS 2026**
 
-[Paper](https://openreview.net/forum?id=XS3R795hKo) · [VAR guide](var/README.md) · [Infinity guide](infinity/README.md) · [Citation](#citation)
+[Paper](https://arxiv.org/abs/2611.06838) · [PDF](https://arxiv.org/pdf/2611.06838) · [VAR guide](var/README.md) · [Infinity guide](infinity/README.md) · [Citation](#citation)
 
 Jixuan Ying · Haoyu Liu · Timing Yang · Tingyu Zhu · Predrag Neskovic  
 Anand Bhattad · Cihang Xie · Zeyu Zheng · Alan Yuille · Feng Wang
@@ -60,7 +60,7 @@ GenEval overall pass rate (%, higher is better), as reported in the paper:
 | Infinity-2B | 71.79 ± 0.46 | **72.57 ± 0.65** |
 | Infinity-8B | 80.63 ± 0.60 | **81.34 ± 0.81** |
 
-See the [paper](https://openreview.net/forum?id=XS3R795hKo) for the full results, experimental settings, and ablations.
+See the [paper](https://arxiv.org/abs/2611.06838) for the full results, experimental settings, and ablations.
 
 ## Getting started
 
@@ -331,7 +331,7 @@ Saccades-AR/
   author    = {Ying, Jixuan and Liu, Haoyu and Yang, Timing and Zhu, Tingyu and Neskovic, Predrag and Bhattad, Anand and Xie, Cihang and Zheng, Zeyu and Yuille, Alan and Wang, Feng},
   booktitle = {Advances in Neural Information Processing Systems},
   year      = {2026},
-  url       = {https://openreview.net/forum?id=XS3R795hKo}
+  url       = {https://arxiv.org/abs/2611.06838}
 }
 ```
 
